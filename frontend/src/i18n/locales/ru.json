@@ -1,0 +1,96 @@
+{
+  "header": {
+    "news": "Новости",
+    "categories": "Категории",
+    "search": "Поиск",
+    "login": "Войти",
+    "register": "Регистрация",
+    "logout": "Выйти",
+    "bookmarks": "Закладки",
+    "admin": "Админ панель",
+    "searchPlaceholder": "Поиск новостей..."
+  },
+  "home": {
+    "title": "Главная",
+    "latestNews": "Последние новости",
+    "popularToday": "Популярное сегодня",
+    "readMore": "Читать далее",
+    "noNews": "Нет новостей"
+  },
+  "news": {
+    "views": "просмотров",
+    "publishedAt": "Опубликовано",
+    "similarNews": "Похожие новости",
+    "backToHome": "На главную"
+  },
+  "comments": {
+    "title": "Комментарии",
+    "write": "Написать комментарий...",
+    "submit": "Отправить",
+    "sortPopular": "Популярные",
+    "sortLatest": "Последние",
+    "noComments": "Комментариев пока нет",
+    "loginToComment": "Войдите, чтобы оставить комментарий"
+  },
+  "auth": {
+    "loginTitle": "Вход",
+    "registerTitle": "Регистрация",
+    "email": "Email",
+    "phone": "Телефон",
+    "password": "Пароль",
+    "confirmPassword": "Подтвердите пароль",
+    "loginBtn": "Войти",
+    "registerBtn": "Зарегистрироваться",
+    "noAccount": "Нет аккаунта?",
+    "hasAccount": "Уже есть аккаунт?",
+    "invalidCredentials": "Неверный email или пароль",
+    "emailExists": "Этот email уже зарегистрирован"
+  },
+  "bookmarks": {
+    "title": "Закладки",
+    "empty": "У вас пока нет закладок",
+    "removed": "Удалено из закладок",
+    "added": "Добавлено в закладки"
+  },
+  "categories": {
+    "title": "Категории",
+    "noNews": "В этой категории пока нет новостей"
+  },
+  "search": {
+    "title": "Результаты поиска",
+    "noResults": "Ничего не найдено по запросу",
+    "placeholder": "Введите запрос..."
+  },
+  "admin": {
+    "title": "Админ панель",
+    "news": "Новости",
+    "categories": "Категории",
+    "createNews": "Создать новость",
+    "editNews": "Редактировать новость",
+    "newsTitle": "Заголовок",
+    "previewText": "Текст превью",
+    "mainImage": "Главное изображение",
+    "content": "Содержание",
+    "published": "Опубликовано",
+    "draft": "Черновик",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "confirmDelete": "Вы уверены?",
+    "categoryName": "Название категории",
+    "categorySlug": "Slug категории",
+    "addCategory": "Добавить категорию",
+    "uploadImage": "Загрузить изображение",
+    "selectCategories": "Выберите категории"
+  },
+  "common": {
+    "loading": "Загрузка...",
+    "error": "Произошла ошибка",
+    "retry": "Повторить",
+    "page": "Страница",
+    "of": "из"
+  },
+  "footer": {
+    "copyright": "© 2026 ASANOV NEWS. Все права защищены."
+  }
+}
