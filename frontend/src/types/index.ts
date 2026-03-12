@@ -4,8 +4,52 @@ export interface User {
   phone: string | null
   name: string | null
   avatar: string | null
+  birthday: string | null
+  gender: string | null
+  show_stats: boolean
   role: string
   created_at: string
+}
+
+export interface UserStats {
+  comments_count: number
+  reactions_given: number
+  reactions_received: number
+  news_read: number
+  bookmarks_count: number
+}
+
+export interface UserComment {
+  id: string
+  content: string
+  created_at: string
+  likes_count: number
+  news_id: string
+  news_title: string | null
+}
+
+export interface RecentRead {
+  id: string
+  title: string
+  main_image: string | null
+  published_at: string | null
+  viewed_at: string
+}
+
+export interface PublicProfile {
+  id: string
+  name: string | null
+  avatar: string | null
+  created_at: string
+  comments_count: number
+  show_stats: boolean
+  stats: {
+    comments_count: number
+    reactions_given: number
+    reactions_received: number
+    news_read: number
+  } | null
+  comments: UserComment[]
 }
 
 export interface ContentBlock {

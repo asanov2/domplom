@@ -1,7 +1,7 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, date
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel
 
 
 class UserCreate(BaseModel):
@@ -21,6 +21,9 @@ class UserResponse(BaseModel):
     phone: str | None
     name: str | None
     avatar: str | None
+    birthday: date | None
+    gender: str | None
+    show_stats: bool
     role: str
     created_at: datetime
 
@@ -31,6 +34,9 @@ class ProfileUpdate(BaseModel):
     name: str | None = None
     phone: str | None = None
     avatar: str | None = None
+    birthday: date | None = None
+    gender: str | None = None
+    show_stats: bool | None = None
 
 
 class UserPublicResponse(BaseModel):

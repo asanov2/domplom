@@ -1,9 +1,11 @@
 import uuid
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_admin, get_db
+from app.core.deps import get_current_admin, get_db, get_optional_user
+from app.models.news_view import NewsView
 from app.crud.news import (
     create_news,
     delete_news,
@@ -60,11 +62,28 @@ async def list_news(
 
 
 @router.get("/{news_id}", response_model=NewsDetailResponse)
-async def get_news(news_id: uuid.UUID, db: AsyncSession = Depends(get_db)):
+async def get_news(
+    news_id: uuid.UUID,
+    db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
+):
     news = await get_news_by_id(db, news_id)
     if not news:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="News not found")
     await increment_views(db, news_id)
+
+    # Record view for authenticated user
+    if current_user:
+        existing = await db.execute(
+            select(NewsView).where(
+                NewsView.user_id == current_user.id,
+                NewsView.news_id == news_id,
+            )
+        )
+        if not existing.scalar_one_or_none():
+            db.add(NewsView(user_id=current_user.id, news_id=news_id))
+            await db.flush()
+
     return news
 
 

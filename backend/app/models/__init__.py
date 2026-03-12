@@ -6,6 +6,7 @@ from app.models.news_category import news_category
 from app.models.comment import Comment
 from app.models.comment_like import CommentLike
 from app.models.bookmark import Bookmark
+from app.models.news_view import NewsView
 
 __all__ = [
     "User",
@@ -16,4 +17,5 @@ __all__ = [
     "Comment",
     "CommentLike",
     "Bookmark",
+    "NewsView",
 ]
