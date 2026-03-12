@@ -26,6 +26,9 @@ export default function AdminNewsList() {
       queryClient.invalidateQueries({ queryKey: ['admin-news'] })
       queryClient.invalidateQueries({ queryKey: ['news'] })
       queryClient.invalidateQueries({ queryKey: ['popular-today'] })
+      queryClient.invalidateQueries({ queryKey: ['popular-week'] })
+      queryClient.invalidateQueries({ queryKey: ['news-latest-sidebar'] })
+      queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
       setDeleteId(null)
     },
   })

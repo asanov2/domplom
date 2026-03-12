@@ -69,6 +69,8 @@ export default function AdminNewsEditor() {
       queryClient.invalidateQueries({ queryKey: ['admin-news'] })
       queryClient.invalidateQueries({ queryKey: ['news'] })
       queryClient.invalidateQueries({ queryKey: ['popular-today'] })
+      queryClient.invalidateQueries({ queryKey: ['popular-week'] })
+      queryClient.invalidateQueries({ queryKey: ['news-latest-sidebar'] })
       addToast(isEdit ? t('toast.newsUpdated', 'Новость обновлена') : t('toast.newsCreated', 'Новость создана'))
       navigate('/admin/news')
     },

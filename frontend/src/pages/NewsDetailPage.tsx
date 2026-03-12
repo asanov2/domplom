@@ -41,6 +41,7 @@ export default function NewsDetailPage() {
     mutationFn: async () => (await api.post(`/bookmarks/${id}`)).data,
     onSuccess: (data: { bookmarked?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['bookmark-status', id] })
+      queryClient.invalidateQueries({ queryKey: ['bookmarks'] })
       addToast(data?.bookmarked
         ? t('toast.bookmarkAdded', 'Добавлено в закладки')
         : t('toast.bookmarkRemoved', 'Убрано из закладок'))

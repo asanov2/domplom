@@ -15,6 +15,7 @@ async def get_user_bookmarks(db: AsyncSession, user_id: uuid.UUID) -> list[Bookm
         .options(
             selectinload(Bookmark.news).selectinload(News.author),
             selectinload(Bookmark.news).selectinload(News.categories),
+            selectinload(Bookmark.news).selectinload(News.comments),
         )
         .order_by(Bookmark.created_at.desc())
     )

@@ -26,10 +26,12 @@ def upgrade() -> None:
     op.create_table(
         'news_views',
         sa.Column('id', UUID(as_uuid=True), primary_key=True, server_default=sa.text('gen_random_uuid()')),
-        sa.Column('user_id', UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=False),
+        sa.Column('user_id', UUID(as_uuid=True), sa.ForeignKey('users.id'), nullable=True),
         sa.Column('news_id', UUID(as_uuid=True), sa.ForeignKey('news.id', ondelete='CASCADE'), nullable=False),
+        sa.Column('ip_address', sa.String(45), nullable=True),
         sa.Column('viewed_at', sa.DateTime(timezone=True), server_default=sa.func.now()),
         sa.UniqueConstraint('user_id', 'news_id', name='uq_user_news_view'),
+        sa.UniqueConstraint('ip_address', 'news_id', name='uq_ip_news_view'),
     )
 
 

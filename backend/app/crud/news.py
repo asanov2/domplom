@@ -171,11 +171,6 @@ async def delete_news(db: AsyncSession, news_id: uuid.UUID) -> bool:
     return result.rowcount > 0
 
 
-async def increment_views(db: AsyncSession, news_id: uuid.UUID):
-    await db.execute(
-        update(News).where(News.id == news_id).values(views_count=News.views_count + 1)
-    )
-
 
 async def get_popular_today(db: AsyncSession, limit: int = 5) -> list[News]:
     two_days_ago = datetime.now(timezone.utc) - timedelta(days=2)

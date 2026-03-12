@@ -11,7 +11,7 @@ import type { Category } from '../types'
 export default function MainLayout() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { isAuthenticated, isAdmin, user, logout } = useAuthStore()
+  const { isAuthenticated, isAdmin, logout } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
   const [showCategories, setShowCategories] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
@@ -127,18 +127,12 @@ export default function MainLayout() {
                 )}
                 <Link
                   to="/profile"
-                  className="flex items-center gap-2 text-sm px-4 py-2 rounded-xl bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  className="flex items-center gap-2 text-sm px-4 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/30 transition-colors"
                 >
-                  <div className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                    {user?.avatar ? (
-                      <img src={user.avatar} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <svg className="w-3.5 h-3.5 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    )}
-                  </div>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">{t('profile.title')}</span>
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span className="font-medium">{t('profile.title')}</span>
                 </Link>
                 <button
                   onClick={() => {
@@ -216,17 +210,11 @@ export default function MainLayout() {
                 <Link
                   to="/profile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="flex items-center gap-3 py-2.5 text-sm"
+                  className="flex items-center gap-2 py-2.5 text-sm text-primary-600 dark:text-primary-400"
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center flex-shrink-0 overflow-hidden">
-                    {user?.avatar ? (
-                      <img src={user.avatar} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <svg className="w-4 h-4 text-primary-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                    )}
-                  </div>
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
                   <span className="font-medium">{t('profile.title')}</span>
                 </Link>
                 <Link to="/bookmarks" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm">

@@ -31,6 +31,10 @@ export default function CommentsSection({ newsId }: Props) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', newsId] })
+      queryClient.invalidateQueries({ queryKey: ['news'] })
+      queryClient.invalidateQueries({ queryKey: ['popular-today'] })
+      queryClient.invalidateQueries({ queryKey: ['popular-week'] })
+      queryClient.invalidateQueries({ queryKey: ['news-latest-sidebar'] })
       setContent('')
       addToast(t('toast.commentAdded', 'Комментарий добавлен'))
     },
