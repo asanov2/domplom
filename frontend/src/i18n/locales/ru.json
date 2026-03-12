@@ -90,6 +90,39 @@
     "page": "Страница",
     "of": "из"
   },
+  "dates": {
+    "today": "сегодня",
+    "yesterday": "вчера",
+    "at": "в"
+  },
+  "toast": {
+    "newsCreated": "Новость создана",
+    "newsUpdated": "Новость обновлена",
+    "categoryAdded": "Категория добавлена",
+    "categoryDeleted": "Категория удалена",
+    "commentAdded": "Комментарий добавлен",
+    "bookmarkAdded": "Добавлено в закладки",
+    "bookmarkRemoved": "Убрано из закладок",
+    "linkCopied": "Ссылка скопирована"
+  },
+  "profile": {
+    "title": "Профиль",
+    "name": "Имя",
+    "namePlaceholder": "Введите ваше имя",
+    "avatar": "Аватар",
+    "changeAvatar": "Изменить аватар",
+    "save": "Сохранить",
+    "saved": "Профиль сохранён",
+    "memberSince": "На сайте с",
+    "commentsCount": "Комментариев"
+  },
+  "sidebar": {
+    "latest": "Последние",
+    "popularWeek": "Популярные за неделю"
+  },
+  "share": {
+    "button": "Поделиться"
+  },
   "footer": {
     "copyright": "© 2026 ASANOV NEWS. Все права защищены."
   }

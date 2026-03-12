@@ -23,6 +23,7 @@ async def get_news_list(
     query = select(News).options(
         selectinload(News.author),
         selectinload(News.categories),
+        selectinload(News.comments),
     )
 
     if published_only:
@@ -176,24 +177,49 @@ async def increment_views(db: AsyncSession, news_id: uuid.UUID):
 
 
 async def get_popular_today(db: AsyncSession, limit: int = 5) -> list[News]:
-    today_start = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+    two_days_ago = datetime.now(timezone.utc) - timedelta(days=2)
 
     result = await db.execute(
         select(News)
-        .where(News.is_published == True, News.published_at >= today_start)
-        .options(selectinload(News.author), selectinload(News.categories))
+        .where(News.is_published == True, News.published_at >= two_days_ago)
+        .options(selectinload(News.author), selectinload(News.categories), selectinload(News.comments))
         .order_by(News.views_count.desc(), News.published_at.desc())
         .limit(limit)
     )
     items = list(result.scalars().unique())
 
-    # If no news today, get latest published
+    # If no news in last 2 days, get latest published
     if not items:
         result = await db.execute(
             select(News)
             .where(News.is_published == True)
-            .options(selectinload(News.author), selectinload(News.categories))
+            .options(selectinload(News.author), selectinload(News.categories), selectinload(News.comments))
             .order_by(News.published_at.desc().nullslast())
+            .limit(limit)
+        )
+        items = list(result.scalars().unique())
+
+    return items
+
+
+async def get_popular_week(db: AsyncSession, limit: int = 5) -> list[News]:
+    week_ago = datetime.now(timezone.utc) - timedelta(days=7)
+
+    result = await db.execute(
+        select(News)
+        .where(News.is_published == True, News.published_at >= week_ago)
+        .options(selectinload(News.author), selectinload(News.categories), selectinload(News.comments))
+        .order_by(News.views_count.desc(), News.published_at.desc())
+        .limit(limit)
+    )
+    items = list(result.scalars().unique())
+
+    if not items:
+        result = await db.execute(
+            select(News)
+            .where(News.is_published == True)
+            .options(selectinload(News.author), selectinload(News.categories), selectinload(News.comments))
+            .order_by(News.views_count.desc(), News.published_at.desc())
             .limit(limit)
         )
         items = list(result.scalars().unique())
@@ -215,7 +241,7 @@ async def get_similar_news(
         result = await db.execute(
             select(News)
             .where(News.is_published == True, News.id != news_id)
-            .options(selectinload(News.author), selectinload(News.categories))
+            .options(selectinload(News.author), selectinload(News.categories), selectinload(News.comments))
             .order_by(News.published_at.desc().nullslast())
             .limit(limit)
         )
@@ -230,7 +256,7 @@ async def get_similar_news(
             News.id != news_id,
             news_category.c.category_id.in_(cat_ids),
         )
-        .options(selectinload(News.author), selectinload(News.categories))
+        .options(selectinload(News.author), selectinload(News.categories), selectinload(News.comments))
         .group_by(News.id)
         .order_by(func.count(news_category.c.category_id).desc(), News.published_at.desc())
         .limit(limit)

@@ -9,3 +9,18 @@
     @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100 font-sans;
   }
 }
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.2s ease-out;
+}

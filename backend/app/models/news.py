@@ -40,6 +40,10 @@ class News(Base):
         back_populates="news", cascade="all, delete-orphan"
     )
 
+    @property
+    def comments_count(self) -> int:
+        return len(self.comments)
+
     __table_args__ = (
         Index("ix_news_search_vector", "search_vector", postgresql_using="gin"),
     )

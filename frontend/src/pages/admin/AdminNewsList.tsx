@@ -24,6 +24,8 @@ export default function AdminNewsList() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-news'] })
+      queryClient.invalidateQueries({ queryKey: ['news'] })
+      queryClient.invalidateQueries({ queryKey: ['popular-today'] })
       setDeleteId(null)
     },
   })

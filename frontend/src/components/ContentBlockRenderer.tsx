@@ -19,17 +19,30 @@ export default function ContentBlockRenderer({ blocks }: Props) {
                 dangerouslySetInnerHTML={{ __html: block.content }}
               />
             )
-          case 'image':
+          case 'image': {
+            let imgUrl = block.content
+            let imgCaption = ''
+            try {
+              const parsed = JSON.parse(block.content)
+              imgUrl = parsed.url || block.content
+              imgCaption = parsed.caption || ''
+            } catch { /* plain URL string */ }
             return (
               <figure key={block.id} className="my-6">
                 <img
-                  src={block.content}
-                  alt=""
+                  src={imgUrl}
+                  alt={imgCaption}
                   className="w-full rounded-lg"
                   loading="lazy"
                 />
+                {imgCaption && (
+                  <figcaption className="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">
+                    {imgCaption}
+                  </figcaption>
+                )}
               </figure>
             )
+          }
           case 'youtube': {
             // Extract YouTube video ID or use embed URL directly
             let embedUrl = block.content

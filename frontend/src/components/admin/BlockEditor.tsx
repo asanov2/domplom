@@ -19,13 +19,30 @@ function toEditorJSBlocks(blocks: ContentBlock[]) {
   return sorted.map((block) => {
     switch (block.type) {
       case 'text':
-        return { type: 'paragraph', data: { text: block.content } }
-      case 'image':
-        return { type: 'image', data: { file: { url: block.content }, caption: '' } }
+        return { type: 'paragraph', data: { text: block.content || '&nbsp;' } }
+      case 'image': {
+        let url = block.content
+        let caption = ''
+        try {
+          const parsed = JSON.parse(block.content)
+          url = parsed.url || block.content
+          caption = parsed.caption || ''
+        } catch { /* plain URL string */ }
+        return {
+          type: 'image',
+          data: {
+            file: { url },
+            caption,
+            withBorder: false,
+            stretched: false,
+            withBackground: false,
+          },
+        }
+      }
       case 'youtube':
         return { type: 'embed', data: { service: 'youtube', source: block.content, embed: block.content } }
       default:
-        return { type: 'paragraph', data: { text: block.content } }
+        return { type: 'paragraph', data: { text: block.content || '&nbsp;' } }
     }
   })
 }
@@ -37,12 +54,15 @@ function fromEditorJSBlocks(blocks: { type: string; data: Record<string, unknown
       case 'paragraph':
       case 'header':
         return { type: 'text' as const, content: block.data.text as string, position: index }
-      case 'image':
+      case 'image': {
+        const imgUrl = (block.data.file as { url: string })?.url || (block.data.url as string) || ''
+        const imgCaption = (block.data.caption as string) || ''
         return {
           type: 'image' as const,
-          content: (block.data.file as { url: string })?.url || (block.data.url as string) || '',
+          content: JSON.stringify({ url: imgUrl, caption: imgCaption }),
           position: index,
         }
+      }
       case 'embed':
         return { type: 'youtube' as const, content: (block.data.source as string) || '', position: index }
       case 'list': {
@@ -91,11 +111,18 @@ export default function BlockEditor({ initialBlocks, onSave, editorRef: external
         image: {
           class: ImageTool as unknown as EditorJS.ToolConstructable,
           config: {
-            endpoints: {
-              byFile: '/api/upload/image',
-            },
-            additionalRequestHeaders: {
-              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            uploader: {
+              async uploadByFile(file: File) {
+                const formData = new FormData()
+                formData.append('file', file)
+                const token = localStorage.getItem('token')
+                const res = await fetch('/api/upload/image', {
+                  method: 'POST',
+                  headers: { Authorization: `Bearer ${token}` },
+                  body: formData,
+                })
+                return res.json()
+              },
             },
           },
         },

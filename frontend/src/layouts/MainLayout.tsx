@@ -125,7 +125,9 @@ export default function MainLayout() {
                     {t('header.admin')}
                   </Link>
                 )}
-                <span className="text-sm text-gray-600 dark:text-gray-400">{user?.email}</span>
+                <Link to="/profile" className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 transition-colors">
+                  {user?.name || user?.email}
+                </Link>
                 <button
                   onClick={() => {
                     logout()
@@ -196,6 +198,9 @@ export default function MainLayout() {
             ))}
             {isAuthenticated ? (
               <>
+                <Link to="/profile" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm">
+                  {t('profile.title', 'Профиль')}
+                </Link>
                 <Link to="/bookmarks" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm">
                   {t('header.bookmarks')}
                 </Link>

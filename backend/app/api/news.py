@@ -10,6 +10,7 @@ from app.crud.news import (
     get_news_by_id,
     get_news_list,
     get_popular_today,
+    get_popular_week,
     get_similar_news,
     increment_views,
     update_news,
@@ -29,6 +30,11 @@ router = APIRouter(prefix="/news", tags=["news"])
 @router.get("/popular-today", response_model=list[NewsResponse])
 async def popular_today(db: AsyncSession = Depends(get_db)):
     return await get_popular_today(db)
+
+
+@router.get("/popular-week", response_model=list[NewsResponse])
+async def popular_week(db: AsyncSession = Depends(get_db)):
+    return await get_popular_week(db)
 
 
 @router.get("/search", response_model=NewsPaginatedResponse)

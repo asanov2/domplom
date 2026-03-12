@@ -1,7 +1,10 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '../store/authStore'
+import { useToastStore } from '../store/toastStore'
+import { formatDate } from '../utils/formatDate'
 import api from '../services/api'
 import type { Comment } from '../types'
 
@@ -12,6 +15,7 @@ interface Props {
 export default function CommentsSection({ newsId }: Props) {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuthStore()
+  const { addToast } = useToastStore()
   const queryClient = useQueryClient()
   const [sort, setSort] = useState<'latest' | 'popular'>('latest')
   const [content, setContent] = useState('')
@@ -28,6 +32,7 @@ export default function CommentsSection({ newsId }: Props) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', newsId] })
       setContent('')
+      addToast(t('toast.commentAdded', 'Комментарий добавлен'))
     },
   })
 
@@ -110,9 +115,14 @@ export default function CommentsSection({ newsId }: Props) {
               className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800"
             >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-sm">{comment.user.email}</span>
+                <Link
+                  to={`/user/${comment.user.id}`}
+                  className="font-medium text-sm hover:text-primary-600 transition-colors"
+                >
+                  {comment.user.name || comment.user.email}
+                </Link>
                 <span className="text-xs text-gray-500">
-                  {new Date(comment.created_at).toLocaleString()}
+                  {formatDate(comment.created_at)}
                 </span>
               </div>
               <p className="text-gray-700 dark:text-gray-300 mb-3">{comment.content}</p>

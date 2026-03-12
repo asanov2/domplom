@@ -88,6 +88,39 @@
     "page": "Бет",
     "of": "/"
   },
+  "dates": {
+    "today": "бүгін",
+    "yesterday": "кеше",
+    "at": "сағат"
+  },
+  "toast": {
+    "newsCreated": "Жаңалық жасалды",
+    "newsUpdated": "Жаңалық жаңартылды",
+    "categoryAdded": "Санат қосылды",
+    "categoryDeleted": "Санат жойылды",
+    "commentAdded": "Пікір қосылды",
+    "bookmarkAdded": "Бетбелгілерге қосылды",
+    "bookmarkRemoved": "Бетбелгілерден жойылды",
+    "linkCopied": "Сілтеме көшірілді"
+  },
+  "profile": {
+    "title": "Профиль",
+    "name": "Аты",
+    "namePlaceholder": "Атыңызды енгізіңіз",
+    "avatar": "Аватар",
+    "changeAvatar": "Аватарды өзгерту",
+    "save": "Сақтау",
+    "saved": "Профиль сақталды",
+    "memberSince": "Сайтта",
+    "commentsCount": "Пікірлер"
+  },
+  "sidebar": {
+    "latest": "Соңғы",
+    "popularWeek": "Апта бойы танымал"
+  },
+  "share": {
+    "button": "Бөлісу"
+  },
   "footer": {
     "copyright": "© 2026 ASANOV NEWS. Барлық құқықтар қорғалған."
   }

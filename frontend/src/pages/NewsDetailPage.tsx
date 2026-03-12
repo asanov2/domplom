@@ -3,7 +3,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Helmet } from 'react-helmet-async'
 import api from '../services/api'
+import { formatDate } from '../utils/formatDate'
 import { useAuthStore } from '../store/authStore'
+import { useToastStore } from '../store/toastStore'
 import ContentBlockRenderer from '../components/ContentBlockRenderer'
 import CommentsSection from '../components/CommentsSection'
 import NewsCard from '../components/NewsCard'
@@ -14,6 +16,7 @@ export default function NewsDetailPage() {
   const { id } = useParams<{ id: string }>()
   const { t } = useTranslation()
   const { isAuthenticated } = useAuthStore()
+  const { addToast } = useToastStore()
   const queryClient = useQueryClient()
 
   const { data: news, isLoading } = useQuery<NewsDetail>({
@@ -36,8 +39,11 @@ export default function NewsDetailPage() {
 
   const toggleBookmark = useMutation({
     mutationFn: async () => (await api.post(`/bookmarks/${id}`)).data,
-    onSuccess: () => {
+    onSuccess: (data: { bookmarked?: boolean }) => {
       queryClient.invalidateQueries({ queryKey: ['bookmark-status', id] })
+      addToast(data?.bookmarked
+        ? t('toast.bookmarkAdded', 'Добавлено в закладки')
+        : t('toast.bookmarkRemoved', 'Убрано из закладок'))
     },
   })
 
@@ -53,12 +59,14 @@ export default function NewsDetailPage() {
 
       {/* Hero image */}
       {news.main_image && (
-        <div className="w-full h-[50vh] min-h-[300px] overflow-hidden">
-          <img
-            src={news.main_image}
-            alt={news.title}
-            className="w-full h-full object-cover"
-          />
+        <div className="max-w-5xl mx-auto px-4 pt-8">
+          <div className="w-full h-[40vh] min-h-[280px] overflow-hidden rounded-2xl">
+            <img
+              src={news.main_image}
+              alt={news.title}
+              className="w-full h-full object-cover"
+            />
+          </div>
         </div>
       )}
 
@@ -91,13 +99,11 @@ export default function NewsDetailPage() {
         <h1 className="text-3xl md:text-4xl font-black leading-tight mb-4">{news.title}</h1>
 
         {/* Meta */}
-        <div className="flex items-center gap-4 text-sm text-gray-500 mb-8 pb-8 border-b border-gray-200 dark:border-gray-800">
-          <span>{news.author.email}</span>
+        <div className="flex items-center flex-wrap gap-4 text-sm text-gray-500 mb-8 pb-8 border-b border-gray-200 dark:border-gray-800">
+          <span>{news.author.name || news.author.email}</span>
           <span>
             {t('news.publishedAt')}{' '}
-            {news.published_at
-              ? new Date(news.published_at).toLocaleDateString()
-              : new Date(news.created_at).toLocaleDateString()}
+            {formatDate(news.published_at || news.created_at)}
           </span>
           <span className="flex items-center gap-1">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,31 +113,47 @@ export default function NewsDetailPage() {
             {news.views_count} {t('news.views')}
           </span>
 
-          {/* Bookmark button */}
-          {isAuthenticated && (
+          <div className="ml-auto flex items-center gap-2">
+            {/* Share button */}
             <button
-              onClick={() => toggleBookmark.mutate()}
-              className={`ml-auto flex items-center gap-1 transition-colors ${
-                bookmarkStatus?.bookmarked
-                  ? 'text-primary-600'
-                  : 'text-gray-400 hover:text-primary-600'
-              }`}
+              onClick={() => {
+                navigator.clipboard.writeText(window.location.href)
+                addToast(t('share.copied', 'Ссылка скопирована'))
+              }}
+              className="flex items-center gap-1 text-gray-400 hover:text-primary-600 transition-colors"
+              title={t('share.copy', 'Поделиться')}
             >
-              <svg
-                className="w-5 h-5"
-                fill={bookmarkStatus?.bookmarked ? 'currentColor' : 'none'}
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-                />
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
             </button>
-          )}
+
+            {/* Bookmark button */}
+            {isAuthenticated && (
+              <button
+                onClick={() => toggleBookmark.mutate()}
+                className={`flex items-center gap-1 transition-colors ${
+                  bookmarkStatus?.bookmarked
+                    ? 'text-primary-600'
+                    : 'text-gray-400 hover:text-primary-600'
+                }`}
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill={bookmarkStatus?.bookmarked ? 'currentColor' : 'none'}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+                  />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Content blocks */}
@@ -144,6 +166,9 @@ export default function NewsDetailPage() {
           />
         )}
 
+        {/* Comments */}
+        <CommentsSection newsId={id!} />
+
         {/* Similar news */}
         {similar && similar.length > 0 && (
           <section className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
@@ -155,9 +180,6 @@ export default function NewsDetailPage() {
             </div>
           </section>
         )}
-
-        {/* Comments */}
-        <CommentsSection newsId={id!} />
       </article>
     </>
   )

@@ -2,6 +2,8 @@ export interface User {
   id: string
   email: string
   phone: string | null
+  name: string | null
+  avatar: string | null
   role: string
   created_at: string
 }
@@ -32,6 +34,7 @@ export interface NewsItem {
   preview_text: string
   main_image: string | null
   views_count: number
+  comments_count: number
   is_published: boolean
   published_at: string | null
   created_at: string

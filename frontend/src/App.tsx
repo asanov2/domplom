@@ -12,6 +12,8 @@ import RegisterPage from './pages/RegisterPage'
 import AdminNewsList from './pages/admin/AdminNewsList'
 import AdminNewsEditor from './pages/admin/AdminNewsEditor'
 import AdminCategories from './pages/admin/AdminCategories'
+import ProfilePage from './pages/ProfilePage'
+import UserProfilePage from './pages/UserProfilePage'
 
 function App() {
   return (
@@ -23,8 +25,10 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/user/:id" element={<UserProfilePage />} />
         <Route element={<ProtectedRoute />}>
           <Route path="/bookmarks" element={<BookmarksPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Route>
       <Route element={<ProtectedRoute requireAdmin />}>

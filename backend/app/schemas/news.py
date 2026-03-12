@@ -55,6 +55,7 @@ class NewsResponse(BaseModel):
     preview_text: str
     main_image: str | None
     views_count: int
+    comments_count: int = 0
     is_published: bool
     published_at: datetime | None
     created_at: datetime

@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery, useMutation } from '@tanstack/react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import api from '../../services/api'
+import { useToastStore } from '../../store/toastStore'
 import BlockEditor from '../../components/admin/BlockEditor'
 import LoadingSpinner from '../../components/LoadingSpinner'
 import type { NewsDetail, Category } from '../../types'
@@ -11,6 +12,8 @@ export default function AdminNewsEditor() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const queryClient = useQueryClient()
+  const { addToast } = useToastStore()
   const isEdit = !!id
 
   const [title, setTitle] = useState('')
@@ -62,7 +65,13 @@ export default function AdminNewsEditor() {
         await api.post('/news/', payload)
       }
     },
-    onSuccess: () => navigate('/admin/news'),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-news'] })
+      queryClient.invalidateQueries({ queryKey: ['news'] })
+      queryClient.invalidateQueries({ queryKey: ['popular-today'] })
+      addToast(isEdit ? t('toast.newsUpdated', 'Новость обновлена') : t('toast.newsCreated', 'Новость создана'))
+      navigate('/admin/news')
+    },
   })
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

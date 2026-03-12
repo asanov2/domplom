@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import api from '../../services/api'
+import { useToastStore } from '../../store/toastStore'
 import LoadingSpinner from '../../components/LoadingSpinner'
 import type { Category } from '../../types'
 
 export default function AdminCategories() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
+  const { addToast } = useToastStore()
   const [name, setName] = useState('')
   const [slug, setSlug] = useState('')
   const [deleteId, setDeleteId] = useState<string | null>(null)
@@ -25,6 +27,7 @@ export default function AdminCategories() {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
       setName('')
       setSlug('')
+      addToast(t('toast.categoryAdded', 'Категория добавлена'))
     },
   })
 
@@ -35,6 +38,7 @@ export default function AdminCategories() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['categories'] })
       setDeleteId(null)
+      addToast(t('toast.categoryDeleted', 'Категория удалена'))
     },
   })
 
