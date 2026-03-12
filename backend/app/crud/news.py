@@ -59,6 +59,7 @@ async def get_news_by_id(db: AsyncSession, news_id: uuid.UUID) -> News | None:
             selectinload(News.author),
             selectinload(News.categories),
             selectinload(News.blocks),
+            selectinload(News.comments),
         )
     )
     return result.scalar_one_or_none()
