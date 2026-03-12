@@ -145,9 +145,12 @@ export default function MainLayout() {
                     logout()
                     navigate('/')
                   }}
-                  className="text-sm px-3 py-2 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                  className="flex items-center gap-2 text-sm px-4 py-2 rounded-xl bg-red-50 dark:bg-red-900/10 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors"
                 >
-                  {t('header.logout')}
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span className="font-medium">{t('header.logout')}</span>
                 </button>
               </div>
             ) : (
@@ -234,8 +237,14 @@ export default function MainLayout() {
                     {t('header.admin')}
                   </Link>
                 )}
-                <button onClick={() => { logout(); setMobileMenuOpen(false); navigate('/') }} className="block py-2 text-sm text-red-500">
-                  {t('header.logout')}
+                <button
+                  onClick={() => { logout(); setMobileMenuOpen(false); navigate('/') }}
+                  className="flex items-center gap-2 py-2.5 text-sm text-red-500"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span>{t('header.logout')}</span>
                 </button>
               </>
             ) : (
