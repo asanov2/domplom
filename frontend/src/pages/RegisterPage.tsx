@@ -53,6 +53,7 @@ export default function RegisterPage() {
       </Helmet>
 
       <div className="max-w-md mx-auto px-4 py-16">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-card p-8">
         <h1 className="text-3xl font-bold text-center mb-8">{t('auth.registerTitle')}</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -69,7 +70,7 @@ export default function RegisterPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
@@ -80,7 +81,7 @@ export default function RegisterPage() {
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               placeholder="+7 (777) 123-45-67"
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
@@ -92,7 +93,7 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
@@ -103,7 +104,7 @@ export default function RegisterPage() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500"
             />
           </div>
 
@@ -122,6 +123,7 @@ export default function RegisterPage() {
             {t('auth.loginBtn')}
           </Link>
         </p>
+        </div>
       </div>
     </>
   )

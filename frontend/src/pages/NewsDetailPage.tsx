@@ -89,7 +89,7 @@ export default function NewsDetailPage() {
             <Link
               key={cat.id}
               to={`/category/${cat.slug}`}
-              className="text-xs px-3 py-1 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-full hover:bg-primary-100 dark:hover:bg-primary-900/50 transition-colors"
+              className="text-xs px-3 py-1 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full hover:bg-primary-200 dark:hover:bg-primary-900/50 transition-colors"
             >
               {cat.name}
             </Link>

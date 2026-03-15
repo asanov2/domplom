@@ -62,10 +62,10 @@ export default function NewsSidebar() {
       </div>
 
       {/* News list */}
-      <div className="space-y-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-4">
+      <div className="space-y-3 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-card p-4">
         {items.map((item, index) => (
           <div key={item.id}>
-            {index > 0 && <div className="border-t border-gray-100 dark:border-gray-800 my-3" />}
+            {index > 0 && <div className="border-t border-gray-200 dark:border-gray-800 my-3" />}
             <SidebarCard news={item} index={index + 1} />
           </div>
         ))}

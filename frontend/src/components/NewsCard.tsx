@@ -13,7 +13,7 @@ export default function NewsCard({ news }: Props) {
   return (
     <Link
       to={`/news/${news.id}`}
-      className="group bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 dark:border-gray-800"
+      className="group bg-white dark:bg-gray-900 rounded-xl overflow-hidden shadow-card hover:shadow-card-hover transition-all duration-300 border border-gray-200 dark:border-gray-800"
     >
       <div className="aspect-video overflow-hidden bg-gray-100 dark:bg-gray-800">
         {news.main_image ? (
@@ -35,7 +35,7 @@ export default function NewsCard({ news }: Props) {
           {news.categories.map((cat) => (
             <span
               key={cat.id}
-              className="text-xs px-2 py-0.5 bg-primary-50 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 rounded-full"
+              className="text-xs px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-full"
             >
               {cat.name}
             </span>

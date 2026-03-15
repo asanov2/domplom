@@ -127,7 +127,7 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto px-4 py-10">
 
         {/* ===== Header: Avatar + Info ===== */}
-        <section className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-8 mb-6">
+        <section className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-card p-8 mb-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar */}
             <div className="relative group">
@@ -187,7 +187,7 @@ export default function ProfilePage() {
         </section>
 
         {/* ===== Tab Navigation ===== */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-card">
           {/* Tabs */}
           <div className="flex border-b border-gray-200 dark:border-gray-800">
             {tabs.map((tab) => (
@@ -220,7 +220,7 @@ export default function ProfilePage() {
                 ) : comments && comments.length > 0 ? (
                   <div className="space-y-3">
                     {comments.map((c) => (
-                      <div key={c.id} className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4">
+                      <div key={c.id} className="bg-gray-100/70 dark:bg-gray-800/50 rounded-xl p-4">
                         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{c.content}</p>
                         <div className="flex items-center gap-3 mt-2.5 text-xs text-gray-400">
                           <span>{formatDate(c.created_at)}</span>
@@ -253,7 +253,7 @@ export default function ProfilePage() {
               <div className="space-y-8">
                 {/* Stats Grid */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+                  <div className="bg-gray-100/70 dark:bg-gray-800/50 rounded-xl p-4 text-center">
                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mx-auto mb-2">
                       <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -263,7 +263,7 @@ export default function ProfilePage() {
                     <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{t('profile.newsRead')}</p>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+                  <div className="bg-gray-100/70 dark:bg-gray-800/50 rounded-xl p-4 text-center">
                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-2">
                       <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
@@ -273,7 +273,7 @@ export default function ProfilePage() {
                     <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{t('profile.commentsWritten')}</p>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+                  <div className="bg-gray-100/70 dark:bg-gray-800/50 rounded-xl p-4 text-center">
                     <div className="w-10 h-10 rounded-full bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center mx-auto mb-2">
                       <svg className="w-5 h-5 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
@@ -283,7 +283,7 @@ export default function ProfilePage() {
                     <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">{t('profile.reactionsGiven')}</p>
                   </div>
 
-                  <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
+                  <div className="bg-gray-100/70 dark:bg-gray-800/50 rounded-xl p-4 text-center">
                     <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mx-auto mb-2">
                       <svg className="w-5 h-5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -330,7 +330,7 @@ export default function ProfilePage() {
                         <Link
                           key={item.id}
                           to={`/news/${item.id}`}
-                          className="flex items-center gap-3 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-3 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors group"
+                          className="flex items-center gap-3 bg-gray-100/70 dark:bg-gray-800/50 rounded-xl p-3 hover:bg-gray-200/70 dark:hover:bg-gray-800 transition-colors group"
                         >
                           <div className="w-14 h-14 rounded-lg bg-gray-200 dark:bg-gray-700 overflow-hidden flex-shrink-0">
                             {item.main_image ? (
@@ -373,7 +373,7 @@ export default function ProfilePage() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder={t('profile.namePlaceholder')}
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                     />
                   </div>
 
@@ -396,7 +396,7 @@ export default function ProfilePage() {
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       placeholder="+7 (___) ___-__-__"
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                     />
                   </div>
 
@@ -407,7 +407,7 @@ export default function ProfilePage() {
                       type="date"
                       value={birthday}
                       onChange={(e) => setBirthday(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                     />
                   </div>
 
@@ -417,7 +417,7 @@ export default function ProfilePage() {
                     <select
                       value={gender}
                       onChange={(e) => setGender(e.target.value)}
-                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                      className="w-full px-4 py-2.5 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                     >
                       <option value="">{t('profile.genderPlaceholder')}</option>
                       <option value="male">{t('profile.genderMale')}</option>

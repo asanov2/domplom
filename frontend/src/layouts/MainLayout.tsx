@@ -43,7 +43,7 @@ export default function MainLayout() {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           {/* Logo */}
           <Link to="/" className="flex-shrink-0 font-black text-xl tracking-tight text-primary-600">
@@ -71,7 +71,7 @@ export default function MainLayout() {
               {showCategories && categories && categories.length > 0 && (
                 <div
                   onMouseLeave={() => setShowCategories(false)}
-                  className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-100 dark:border-gray-800 py-2 z-50"
+                  className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 py-2 z-50"
                 >
                   {categories.map((cat) => (
                     <Link
@@ -182,7 +182,7 @@ export default function MainLayout() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-4 py-4 space-y-3">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-4 py-4 space-y-3 shadow-lg">
             <form onSubmit={handleSearch}>
               <input
                 type="text"

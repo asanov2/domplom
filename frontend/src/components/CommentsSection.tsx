@@ -68,7 +68,7 @@ export default function CommentsSection({ newsId }: Props) {
             className={`text-sm px-3 py-1 rounded-lg transition-colors ${
               sort === 'latest'
                 ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
             {t('comments.sortLatest')}
@@ -78,7 +78,7 @@ export default function CommentsSection({ newsId }: Props) {
             className={`text-sm px-3 py-1 rounded-lg transition-colors ${
               sort === 'popular'
                 ? 'bg-primary-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700'
+                : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
             }`}
           >
             {t('comments.sortPopular')}
@@ -94,7 +94,7 @@ export default function CommentsSection({ newsId }: Props) {
             onChange={(e) => setContent(e.target.value)}
             placeholder={t('comments.write')}
             rows={3}
-            className="w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 resize-none"
+            className="w-full px-4 py-3 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl outline-none focus:ring-2 focus:ring-primary-500 resize-none"
           />
           <button
             type="submit"
@@ -116,7 +116,7 @@ export default function CommentsSection({ newsId }: Props) {
           {comments.map((comment) => (
             <div
               key={comment.id}
-              className="p-4 bg-gray-50 dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800"
+              className="p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm"
             >
               <div className="flex items-center justify-between mb-2">
                 <Link
