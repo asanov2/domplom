@@ -84,8 +84,21 @@ async def get_news(
             )
         )
         if not existing.scalar_one_or_none():
-            db.add(NewsView(user_id=current_user.id, news_id=news_id, ip_address=client_ip))
-            is_new_view = True
+            # Don't count if this IP already has an anonymous view
+            # (same person viewed before logging in)
+            ip_view_exists = False
+            if client_ip:
+                ip_result = await db.execute(
+                    select(NewsView).where(
+                        NewsView.ip_address == client_ip,
+                        NewsView.news_id == news_id,
+                    )
+                )
+                ip_view_exists = ip_result.scalar_one_or_none() is not None
+
+            db.add(NewsView(user_id=current_user.id, news_id=news_id))
+            if not ip_view_exists:
+                is_new_view = True
     elif client_ip:
         existing = await db.execute(
             select(NewsView).where(

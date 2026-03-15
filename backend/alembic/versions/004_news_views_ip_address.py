@@ -16,17 +16,10 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # Make user_id nullable (was NOT NULL before)
-    op.alter_column('news_views', 'user_id', existing_type=sa.UUID(), nullable=True)
-
-    # Add ip_address column
-    op.add_column('news_views', sa.Column('ip_address', sa.String(45), nullable=True))
-
-    # Add unique constraint for ip-based views
-    op.create_unique_constraint('uq_ip_news_view', 'news_views', ['ip_address', 'news_id'])
+    # All changes already included in migration 003 (ip_address column,
+    # uq_ip_news_view constraint, nullable user_id). Nothing to do here.
+    pass
 
 
 def downgrade() -> None:
-    op.drop_constraint('uq_ip_news_view', 'news_views', type_='unique')
-    op.drop_column('news_views', 'ip_address')
-    op.alter_column('news_views', 'user_id', existing_type=sa.UUID(), nullable=False)
+    pass
