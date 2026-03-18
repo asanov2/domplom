@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '../store/authStore'
@@ -11,11 +11,14 @@ import type { Category } from '../types'
 export default function MainLayout() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const { isAuthenticated, isAdmin, logout } = useAuthStore()
   const [searchQuery, setSearchQuery] = useState('')
   const [showCategories, setShowCategories] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+
+  const isActive = (path: string) => location.pathname === path
 
   const { data: categories } = useQuery<Category[]>({
     queryKey: ['categories'],
@@ -46,13 +49,23 @@ export default function MainLayout() {
       <header className="sticky top-0 z-50 bg-white/80 dark:bg-gray-950/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-800 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
           {/* Logo */}
-          <Link to="/" className="flex-shrink-0 font-black text-xl tracking-tight text-primary-600">
-            ASANOV NEWS
+          <Link to="/" className="flex-shrink-0 font-black text-xl tracking-tight">
+            <span className="bg-gradient-to-r from-primary-500 to-primary-700 bg-clip-text text-transparent">
+              ASANOV
+            </span>
+            <span className="text-gray-900 dark:text-white"> NEWS</span>
           </Link>
 
           {/* Nav - Desktop */}
           <nav className="hidden md:flex items-center gap-6">
-            <Link to="/" className="text-sm font-medium hover:text-primary-600 transition-colors">
+            <Link
+              to="/"
+              className={`text-sm font-medium transition-colors pb-0.5 ${
+                isActive('/')
+                  ? 'text-primary-600 dark:text-primary-400 nav-link-active'
+                  : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 nav-link'
+              }`}
+            >
               {t('header.news')}
             </Link>
 
@@ -61,17 +74,17 @@ export default function MainLayout() {
               <button
                 onMouseEnter={() => setShowCategories(true)}
                 onClick={() => setShowCategories(!showCategories)}
-                className="text-sm font-medium hover:text-primary-600 transition-colors flex items-center gap-1"
+                className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors flex items-center gap-1 nav-link pb-0.5"
               >
                 {t('header.categories')}
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className={`w-4 h-4 transition-transform duration-200 ${showCategories ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
               {showCategories && categories && categories.length > 0 && (
                 <div
                   onMouseLeave={() => setShowCategories(false)}
-                  className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 py-2 z-50"
+                  className="absolute top-full left-0 mt-2 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-800 py-2 z-50 animate-dropdown-in"
                 >
                   {categories.map((cat) => (
                     <Link
@@ -88,7 +101,14 @@ export default function MainLayout() {
             </div>
 
             {isAuthenticated && (
-              <Link to="/bookmarks" className="text-sm font-medium hover:text-primary-600 transition-colors">
+              <Link
+                to="/bookmarks"
+                className={`text-sm font-medium transition-colors pb-0.5 ${
+                  isActive('/bookmarks')
+                    ? 'text-primary-600 dark:text-primary-400 nav-link-active'
+                    : 'text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 nav-link'
+                }`}
+              >
                 {t('header.bookmarks')}
               </Link>
             )}
@@ -167,7 +187,7 @@ export default function MainLayout() {
             {/* Mobile hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+              className="md:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 {mobileMenuOpen ? (
@@ -182,7 +202,7 @@ export default function MainLayout() {
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-4 py-4 space-y-3 shadow-lg">
+          <div className="md:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 px-4 py-4 space-y-3 shadow-lg animate-slide-up">
             <form onSubmit={handleSearch}>
               <input
                 type="text"
@@ -192,7 +212,7 @@ export default function MainLayout() {
                 className="w-full px-4 py-2 text-sm bg-gray-100 dark:bg-gray-800 rounded-lg outline-none"
               />
             </form>
-            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm">
+            <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-medium">
               {t('header.news')}
             </Link>
             {categories?.map((cat) => (
@@ -217,7 +237,7 @@ export default function MainLayout() {
                   </svg>
                   <span className="font-medium">{t('profile.title')}</span>
                 </Link>
-                <Link to="/bookmarks" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm">
+                <Link to="/bookmarks" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm font-medium">
                   {t('header.bookmarks')}
                 </Link>
                 {isAdmin && (

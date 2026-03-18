@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -9,7 +10,6 @@ import { useToastStore } from '../store/toastStore'
 import ContentBlockRenderer from '../components/ContentBlockRenderer'
 import CommentsSection from '../components/CommentsSection'
 import NewsCard from '../components/NewsCard'
-import LoadingSpinner from '../components/LoadingSpinner'
 import type { NewsDetail, NewsItem } from '../types'
 
 export default function NewsDetailPage() {
@@ -18,6 +18,7 @@ export default function NewsDetailPage() {
   const { isAuthenticated } = useAuthStore()
   const { addToast } = useToastStore()
   const queryClient = useQueryClient()
+  const [bookmarkPulse, setBookmarkPulse] = useState(false)
 
   const { data: news, isLoading } = useQuery<NewsDetail>({
     queryKey: ['news', id],
@@ -48,8 +49,28 @@ export default function NewsDetailPage() {
     },
   })
 
-  if (isLoading) return <LoadingSpinner />
-  if (!news) return <div className="text-center py-12">Not found</div>
+  if (isLoading) return (
+    <div className="max-w-4xl mx-auto px-4 py-8 animate-fade-in">
+      <div className="w-full h-[40vh] min-h-[280px] rounded-2xl skeleton mb-8" />
+      <div className="space-y-4">
+        <div className="h-4 w-24 skeleton rounded-full" />
+        <div className="h-10 skeleton rounded-xl" />
+        <div className="h-10 w-3/4 skeleton rounded-xl" />
+        <div className="flex gap-4 mt-2">
+          <div className="h-4 w-28 skeleton rounded-full" />
+          <div className="h-4 w-20 skeleton rounded-full" />
+        </div>
+        <div className="h-px bg-gray-200 dark:bg-gray-800 my-6" />
+        <div className="space-y-3">
+          <div className="h-4 skeleton rounded" />
+          <div className="h-4 skeleton rounded" />
+          <div className="h-4 w-2/3 skeleton rounded" />
+        </div>
+      </div>
+    </div>
+  )
+
+  if (!news) return <div className="text-center py-12 text-gray-500">Not found</div>
 
   return (
     <>
@@ -129,11 +150,17 @@ export default function NewsDetailPage() {
               </svg>
             </button>
 
-            {/* Bookmark button */}
+            {/* Bookmark button with pulse animation */}
             {isAuthenticated && (
               <button
-                onClick={() => toggleBookmark.mutate()}
+                onClick={() => {
+                  setBookmarkPulse(true)
+                  toggleBookmark.mutate()
+                }}
+                onAnimationEnd={() => setBookmarkPulse(false)}
                 className={`flex items-center gap-1 transition-colors ${
+                  bookmarkPulse ? 'bookmark-pulse' : ''
+                } ${
                   bookmarkStatus?.bookmarked
                     ? 'text-primary-600'
                     : 'text-gray-400 hover:text-primary-600'
@@ -173,10 +200,15 @@ export default function NewsDetailPage() {
         {/* Similar news */}
         {similar && similar.length > 0 && (
           <section className="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
-            <h2 className="text-xl font-bold mb-6">{t('news.similarNews')}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-1 h-6 bg-primary-600 rounded-full" />
+              <h2 className="text-xl font-bold">{t('news.similarNews')}</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 card-grid">
               {similar.map((item) => (
-                <NewsCard key={item.id} news={item} />
+                <div key={item.id} className="animate-card-in">
+                  <NewsCard news={item} />
+                </div>
               ))}
             </div>
           </section>

@@ -8,8 +8,25 @@ import { formatDate } from '../utils/formatDate'
 import NewsCard from '../components/NewsCard'
 import NewsSidebar from '../components/NewsSidebar'
 import Pagination from '../components/Pagination'
-import LoadingSpinner from '../components/LoadingSpinner'
 import type { NewsItem, NewsPaginated } from '../types'
+
+function SkeletonCard() {
+  return (
+    <div className="rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800">
+      <div className="aspect-video skeleton" />
+      <div className="p-4 space-y-3">
+        <div className="h-3 w-20 skeleton rounded-full" />
+        <div className="h-5 skeleton rounded-lg" />
+        <div className="h-4 skeleton rounded-lg" />
+        <div className="h-4 w-3/4 skeleton rounded-lg" />
+        <div className="flex justify-between pt-2">
+          <div className="h-3 w-24 skeleton rounded-full" />
+          <div className="h-3 w-16 skeleton rounded-full" />
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function HomePage() {
   const { t } = useTranslation()
@@ -34,35 +51,41 @@ export default function HomePage() {
       </Helmet>
 
       {/* Hero Banner */}
+      {loadingPopular && !heroNews && (
+        <div className="max-w-7xl mx-auto px-4 pt-8">
+          <div className="w-full h-[50vh] min-h-[350px] rounded-2xl skeleton" />
+        </div>
+      )}
+
       {heroNews && (
         <div className="max-w-7xl mx-auto px-4 pt-8">
           <Link
             to={`/news/${heroNews.id}`}
-            className="relative block w-full h-[50vh] min-h-[350px] overflow-hidden rounded-2xl group"
+            className="relative block w-full h-[50vh] min-h-[350px] overflow-hidden rounded-2xl group page-enter"
           >
             <div className="absolute inset-0 bg-gray-900">
               {heroNews.main_image && (
                 <img
                   src={heroNews.main_image}
                   alt={heroNews.title}
-                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover opacity-60 group-hover:scale-105 group-hover:opacity-70 transition-all duration-700"
                 />
               )}
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
             <div className="absolute bottom-0 left-0 right-0 p-8 md:p-12">
               <div className="max-w-3xl">
                 <div className="flex gap-2 mb-4">
                   {heroNews.categories.map((cat) => (
                     <span
                       key={cat.id}
-                      className="text-xs px-3 py-1 bg-primary-600 text-white rounded-full"
+                      className="text-xs px-3 py-1 bg-primary-600 text-white rounded-full font-medium"
                     >
                       {cat.name}
                     </span>
                   ))}
                 </div>
-                <h1 className="text-2xl md:text-4xl font-black text-white leading-tight mb-3">
+                <h1 className="text-2xl md:text-4xl font-black text-white leading-tight mb-3 group-hover:text-primary-100 transition-colors duration-300">
                   {heroNews.title}
                 </h1>
                 <p className="text-base text-gray-300 line-clamp-2 max-w-2xl">
@@ -96,15 +119,25 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 py-12">
         <div className="flex flex-col lg:flex-row gap-8">
           <div className="flex-1 min-w-0">
-            <h2 className="text-2xl font-bold mb-8">{t('home.latestNews')}</h2>
+            {/* Section header with accent line */}
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-1 h-7 bg-primary-600 rounded-full" />
+              <h2 className="text-2xl font-bold">{t('home.latestNews')}</h2>
+            </div>
 
             {loadingNews ? (
-              <LoadingSpinner />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))}
+              </div>
             ) : newsData && newsData.items.length > 0 ? (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 card-grid">
                   {newsData.items.map((item) => (
-                    <NewsCard key={item.id} news={item} />
+                    <div key={item.id} className="animate-card-in">
+                      <NewsCard news={item} />
+                    </div>
                   ))}
                 </div>
                 <Pagination

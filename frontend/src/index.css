@@ -10,17 +10,91 @@
   }
 }
 
+/* ─── Legacy slide-up (backwards compat) ─────────────────── */
 @keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(1rem); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 .animate-slide-up {
   animation: slide-up 0.2s ease-out;
+}
+
+/* ─── Page fade-in wrapper ────────────────────────────────── */
+.page-enter {
+  animation: fade-in 0.4s ease-out both;
+}
+
+/* ─── Skeleton shimmer (light mode) ──────────────────────── */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(229 231 235) 25%,
+    rgb(243 244 246) 50%,
+    rgb(229 231 235) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* ─── Skeleton shimmer (dark mode) ───────────────────────── */
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(31 41 55) 25%,
+    rgb(55 65 81) 50%,
+    rgb(31 41 55) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
+
+/* ─── Staggered card grid entrance ───────────────────────── */
+.card-grid > *:nth-child(1)  { animation-delay: 0ms;   }
+.card-grid > *:nth-child(2)  { animation-delay: 75ms;  }
+.card-grid > *:nth-child(3)  { animation-delay: 150ms; }
+.card-grid > *:nth-child(4)  { animation-delay: 225ms; }
+.card-grid > *:nth-child(5)  { animation-delay: 300ms; }
+.card-grid > *:nth-child(6)  { animation-delay: 375ms; }
+.card-grid > *:nth-child(7)  { animation-delay: 450ms; }
+.card-grid > *:nth-child(8)  { animation-delay: 525ms; }
+.card-grid > *:nth-child(9)  { animation-delay: 600ms; }
+.card-grid > *:nth-child(n+10) { animation-delay: 600ms; }
+
+/* ─── Active nav underline ────────────────────────────────── */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 9999px;
+  background: theme('colors.primary.500');
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
+}
+.nav-link:hover::after {
+  transform: scaleX(1);
+}
+.nav-link-active {
+  position: relative;
+}
+.nav-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  border-radius: 9999px;
+  background: theme('colors.primary.500');
+  transform: scaleX(1);
+}
+
+/* ─── Bookmark pulse trigger ──────────────────────────────── */
+.bookmark-pulse {
+  animation: pulse-scale 0.35s ease-out;
 }
