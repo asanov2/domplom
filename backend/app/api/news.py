@@ -55,9 +55,22 @@ async def list_news(
     page: int = Query(1, ge=1),
     per_page: int = Query(10, ge=1, le=50),
     category: str | None = Query(None),
+    is_published: bool = Query(True),
+    show_all: bool = Query(False),
     db: AsyncSession = Depends(get_db),
+    current_user: User | None = Depends(get_optional_user),
 ):
-    items, total = await get_news_list(db, page, per_page, category_slug=category)
+    is_admin = current_user and current_user.role == "admin"
+    if not is_admin:
+        # Public: always only published, ignore any params
+        effective_published: bool | None = True
+    elif show_all:
+        # Admin requested all (including drafts)
+        effective_published = None
+    else:
+        # Admin with explicit status filter
+        effective_published = is_published
+    items, total = await get_news_list(db, page, per_page, category_slug=category, is_published=effective_published)
     return NewsPaginatedResponse(items=items, total=total, page=page, per_page=per_page)
 
 

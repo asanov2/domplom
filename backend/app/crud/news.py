@@ -18,7 +18,7 @@ async def get_news_list(
     per_page: int = 10,
     category_slug: str | None = None,
     search_query: str | None = None,
-    published_only: bool = True,
+    is_published: bool | None = True,
 ) -> tuple[list[News], int]:
     query = select(News).options(
         selectinload(News.author),
@@ -26,8 +26,8 @@ async def get_news_list(
         selectinload(News.comments),
     )
 
-    if published_only:
-        query = query.where(News.is_published == True)
+    if is_published is not None:
+        query = query.where(News.is_published == is_published)
 
     if category_slug:
         query = query.join(News.categories).where(Category.slug == category_slug)

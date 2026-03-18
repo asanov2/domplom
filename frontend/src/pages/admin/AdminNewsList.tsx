@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
@@ -12,11 +12,37 @@ export default function AdminNewsList() {
   const [page, setPage] = useState(1)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
+  const [selectedStatus, setSelectedStatus] = useState<boolean | null>(null) // null = all
+  const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setCategoryDropdownOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  const buildUrl = () => {
+    const params = new URLSearchParams()
+    params.set('page', String(page))
+    params.set('per_page', '20')
+    if (selectedCategory) params.set('category', selectedCategory)
+    if (selectedStatus !== null) {
+      params.set('is_published', String(selectedStatus))
+    } else {
+      params.set('show_all', 'true')
+    }
+    return `/news/?${params.toString()}`
+  }
 
   const { data, isLoading } = useQuery<NewsPaginated>({
-    queryKey: ['admin-news', page, selectedCategory],
-    queryFn: async () =>
-      (await api.get(`/news/?page=${page}&per_page=20${selectedCategory ? `&category=${selectedCategory}` : ''}`)).data,
+    queryKey: ['admin-news', page, selectedCategory, selectedStatus],
+    queryFn: async () => (await api.get(buildUrl())).data,
   })
 
   const { data: categories } = useQuery<Category[]>({
@@ -39,10 +65,18 @@ export default function AdminNewsList() {
     },
   })
 
-  const handleCategoryFilter = (slug: string | null) => {
-    setSelectedCategory(slug)
+  const handleStatusFilter = (status: boolean | null) => {
+    setSelectedStatus(prev => prev === status ? null : status)
     setPage(1)
   }
+
+  const handleCategoryFilter = (slug: string | null) => {
+    setSelectedCategory(slug)
+    setCategoryDropdownOpen(false)
+    setPage(1)
+  }
+
+  const selectedCategoryName = categories?.find(c => c.slug === selectedCategory)?.name
 
   if (isLoading) return <LoadingSpinner />
 
@@ -54,7 +88,7 @@ export default function AdminNewsList() {
           <h1 className="text-2xl font-bold">{t('admin.news')}</h1>
           {data && (
             <p className="text-sm text-gray-500 mt-0.5">
-              {t('admin.totalNews', 'Всего')}: <span className="font-medium text-gray-700 dark:text-gray-300">{data.total}</span>
+              Всего: <span className="font-medium text-gray-700 dark:text-gray-300">{data.total}</span>
             </p>
           )}
         </div>
@@ -69,34 +103,98 @@ export default function AdminNewsList() {
         </Link>
       </div>
 
-      {/* Category filter */}
-      {categories && categories.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-5">
+      {/* Filters row */}
+      <div className="flex items-center gap-3 mb-5 flex-wrap">
+        {/* Status buttons */}
+        <div className="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
           <button
-            onClick={() => handleCategoryFilter(null)}
-            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
-              selectedCategory === null
-                ? 'bg-primary-600 text-white shadow-sm'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            onClick={() => handleStatusFilter(true)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              selectedStatus === true
+                ? 'bg-green-500 text-white shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700'
             }`}
           >
-            {t('admin.allCategories', 'Все')}
+            <span className={`w-1.5 h-1.5 rounded-full ${selectedStatus === true ? 'bg-white' : 'bg-green-500'}`} />
+            Опубликовано
           </button>
-          {categories.map((cat) => (
+          <button
+            onClick={() => handleStatusFilter(false)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              selectedStatus === false
+                ? 'bg-amber-500 text-white shadow-sm'
+                : 'text-gray-600 dark:text-gray-400 hover:bg-white dark:hover:bg-gray-700'
+            }`}
+          >
+            <span className={`w-1.5 h-1.5 rounded-full ${selectedStatus === false ? 'bg-white' : 'bg-amber-500'}`} />
+            Черновики
+          </button>
+        </div>
+
+        {/* Category dropdown */}
+        {categories && categories.length > 0 && (
+          <div className="relative" ref={dropdownRef}>
             <button
-              key={cat.id}
-              onClick={() => handleCategoryFilter(cat.slug)}
-              className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                selectedCategory === cat.slug
-                  ? 'bg-primary-600 text-white shadow-sm'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              onClick={() => setCategoryDropdownOpen(v => !v)}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium border transition-colors ${
+                selectedCategory
+                  ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700 text-blue-700 dark:text-blue-300'
+                  : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
               }`}
             >
-              {cat.name}
+              <svg className="w-4 h-4 opacity-70" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+              </svg>
+              {selectedCategoryName ?? 'Категория'}
+              <svg className={`w-3.5 h-3.5 opacity-60 transition-transform ${categoryDropdownOpen ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
+              </svg>
             </button>
-          ))}
-        </div>
-      )}
+
+            {categoryDropdownOpen && (
+              <div className="absolute left-0 top-full mt-1.5 min-w-[180px] bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-lg z-20 py-1 overflow-hidden">
+                <button
+                  onClick={() => handleCategoryFilter(null)}
+                  className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                    selectedCategory === null
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-medium'
+                      : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                  }`}
+                >
+                  Все категории
+                </button>
+                <div className="border-t border-gray-100 dark:border-gray-800 my-1" />
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => handleCategoryFilter(cat.slug)}
+                    className={`w-full text-left px-4 py-2 text-sm transition-colors ${
+                      selectedCategory === cat.slug
+                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-medium'
+                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                    }`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Clear filters */}
+        {(selectedCategory || selectedStatus !== null) && (
+          <button
+            onClick={() => { setSelectedCategory(null); setSelectedStatus(null); setPage(1) }}
+            className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Сбросить
+          </button>
+        )}
+      </div>
 
       {/* Table */}
       <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
@@ -104,7 +202,7 @@ export default function AdminNewsList() {
           <thead>
             <tr className="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 text-left text-xs text-gray-500 uppercase tracking-wide">
               <th className="px-4 py-3 font-semibold">{t('admin.newsTitle')}</th>
-              <th className="px-4 py-3 font-semibold">{t('admin.categoryName', 'Категории')}</th>
+              <th className="px-4 py-3 font-semibold">Категории</th>
               <th className="px-4 py-3 font-semibold w-28">Статус</th>
               <th className="px-4 py-3 font-semibold w-20">{t('news.views')}</th>
               <th className="px-4 py-3 font-semibold w-28">Дата</th>
