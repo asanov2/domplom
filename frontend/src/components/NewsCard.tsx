@@ -53,10 +53,6 @@ export default function NewsCard({ news }: Props) {
           </div>
         )}
 
-        {/* Reading time — top right */}
-        <div className="absolute top-3 right-3 text-xs px-2 py-0.5 bg-black/40 text-white rounded-full backdrop-blur-sm font-medium">
-          {readingTime(news.preview_text)} {t('card.minRead', 'мин')}
-        </div>
       </div>
 
       {/* Body */}
