@@ -18,6 +18,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (p) => p.replace(/^\/api/, ''),
       },
+      '/media': {
+        target: 'http://minio:9000',
+        changeOrigin: true,
+        rewrite: (p) => p.replace(/^\/media/, ''),
+      },
     },
   },
 })
