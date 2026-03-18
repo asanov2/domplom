@@ -4,18 +4,24 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import api from '../../services/api'
 import LoadingSpinner from '../../components/LoadingSpinner'
-import type { NewsPaginated } from '../../types'
+import type { NewsPaginated, Category } from '../../types'
 
 export default function AdminNewsList() {
   const { t } = useTranslation()
   const queryClient = useQueryClient()
   const [page, setPage] = useState(1)
   const [deleteId, setDeleteId] = useState<string | null>(null)
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery<NewsPaginated>({
-    queryKey: ['admin-news', page],
+    queryKey: ['admin-news', page, selectedCategory],
     queryFn: async () =>
-      (await api.get(`/news/?page=${page}&per_page=20`)).data,
+      (await api.get(`/news/?page=${page}&per_page=20${selectedCategory ? `&category=${selectedCategory}` : ''}`)).data,
+  })
+
+  const { data: categories } = useQuery<Category[]>({
+    queryKey: ['categories'],
+    queryFn: async () => (await api.get('/categories/')).data,
   })
 
   const deleteMutation = useMutation({
@@ -33,85 +39,170 @@ export default function AdminNewsList() {
     },
   })
 
+  const handleCategoryFilter = (slug: string | null) => {
+    setSelectedCategory(slug)
+    setPage(1)
+  }
+
   if (isLoading) return <LoadingSpinner />
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold">{t('admin.news')}</h1>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">{t('admin.news')}</h1>
+          {data && (
+            <p className="text-sm text-gray-500 mt-0.5">
+              {t('admin.totalNews', 'Всего')}: <span className="font-medium text-gray-700 dark:text-gray-300">{data.total}</span>
+            </p>
+          )}
+        </div>
         <Link
           to="/admin/news/create"
-          className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors text-sm"
+          className="flex items-center gap-2 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 active:bg-primary-800 transition-colors text-sm font-medium shadow-sm"
         >
-          + {t('admin.createNews')}
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          {t('admin.createNews')}
         </Link>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden">
+      {/* Category filter */}
+      {categories && categories.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-5">
+          <button
+            onClick={() => handleCategoryFilter(null)}
+            className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+              selectedCategory === null
+                ? 'bg-primary-600 text-white shadow-sm'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+            }`}
+          >
+            {t('admin.allCategories', 'Все')}
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => handleCategoryFilter(cat.slug)}
+              className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                selectedCategory === cat.slug
+                  ? 'bg-primary-600 text-white shadow-sm'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Table */}
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 overflow-hidden shadow-sm">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-gray-200 dark:border-gray-800 text-left text-sm text-gray-500">
-              <th className="px-4 py-3 font-medium">{t('admin.newsTitle')}</th>
-              <th className="px-4 py-3 font-medium w-24">Status</th>
-              <th className="px-4 py-3 font-medium w-24">{t('news.views')}</th>
-              <th className="px-4 py-3 font-medium w-32">Date</th>
-              <th className="px-4 py-3 font-medium w-32"></th>
+            <tr className="bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 text-left text-xs text-gray-500 uppercase tracking-wide">
+              <th className="px-4 py-3 font-semibold">{t('admin.newsTitle')}</th>
+              <th className="px-4 py-3 font-semibold">{t('admin.categoryName', 'Категории')}</th>
+              <th className="px-4 py-3 font-semibold w-28">Статус</th>
+              <th className="px-4 py-3 font-semibold w-20">{t('news.views')}</th>
+              <th className="px-4 py-3 font-semibold w-28">Дата</th>
+              <th className="px-4 py-3 font-semibold w-24 text-center">Действия</th>
             </tr>
           </thead>
           <tbody>
+            {data?.items.length === 0 && (
+              <tr>
+                <td colSpan={6} className="px-4 py-12 text-center text-gray-400 text-sm">
+                  Новостей не найдено
+                </td>
+              </tr>
+            )}
             {data?.items.map((item) => (
               <tr
                 key={item.id}
-                className="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                className="border-b border-gray-100 dark:border-gray-800 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-800/40 transition-colors"
               >
                 <td className="px-4 py-3">
-                  <span className="font-medium line-clamp-1">{item.title}</span>
+                  <span className="font-medium text-sm line-clamp-1">{item.title}</span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex flex-wrap gap-1">
+                    {item.categories.length > 0 ? (
+                      item.categories.map((cat) => (
+                        <span
+                          key={cat.id}
+                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/25 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800"
+                        >
+                          {cat.name}
+                        </span>
+                      ))
+                    ) : (
+                      <span className="text-xs text-gray-400">—</span>
+                    )}
+                  </div>
                 </td>
                 <td className="px-4 py-3">
                   <span
-                    className={`text-xs px-2 py-1 rounded-full ${
+                    className={`inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full font-medium ${
                       item.is_published
-                        ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                        : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+                        ? 'bg-green-50 dark:bg-green-900/25 text-green-700 dark:text-green-400 border border-green-100 dark:border-green-800'
+                        : 'bg-amber-50 dark:bg-amber-900/25 text-amber-700 dark:text-amber-400 border border-amber-100 dark:border-amber-800'
                     }`}
                   >
+                    <span className={`w-1.5 h-1.5 rounded-full ${item.is_published ? 'bg-green-500' : 'bg-amber-500'}`} />
                     {item.is_published ? t('admin.published') : t('admin.draft')}
                   </span>
                 </td>
                 <td className="px-4 py-3 text-sm text-gray-500">{item.views_count}</td>
                 <td className="px-4 py-3 text-sm text-gray-500">
-                  {new Date(item.created_at).toLocaleDateString()}
+                  {new Date(item.created_at).toLocaleDateString('ru-RU')}
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <Link
-                      to={`/admin/news/${item.id}/edit`}
-                      className="text-sm text-primary-600 hover:underline"
-                    >
-                      {t('admin.edit')}
-                    </Link>
+                  <div className="flex items-center justify-center gap-1">
                     {deleteId === item.id ? (
-                      <div className="flex items-center gap-1">
+                      <>
                         <button
                           onClick={() => deleteMutation.mutate(item.id)}
-                          className="text-sm text-red-600 hover:underline"
+                          title="Подтвердить удаление"
+                          className="p-1.5 rounded-lg text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
                         >
-                          {t('admin.confirmDelete')}
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
                         </button>
                         <button
                           onClick={() => setDeleteId(null)}
-                          className="text-sm text-gray-500 hover:underline"
+                          title="Отмена"
+                          className="p-1.5 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         >
-                          &times;
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
                         </button>
-                      </div>
+                      </>
                     ) : (
-                      <button
-                        onClick={() => setDeleteId(item.id)}
-                        className="text-sm text-red-500 hover:underline"
-                      >
-                        {t('admin.delete')}
-                      </button>
+                      <>
+                        <Link
+                          to={`/admin/news/${item.id}/edit`}
+                          title={t('admin.edit')}
+                          className="p-1.5 rounded-lg text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                          </svg>
+                        </Link>
+                        <button
+                          onClick={() => setDeleteId(item.id)}
+                          title={t('admin.delete')}
+                          className="p-1.5 rounded-lg text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                        >
+                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                          </svg>
+                        </button>
+                      </>
                     )}
                   </div>
                 </td>
@@ -121,16 +212,17 @@ export default function AdminNewsList() {
         </table>
       </div>
 
+      {/* Pagination */}
       {data && data.total > 20 && (
-        <div className="flex justify-center gap-2 mt-4">
+        <div className="flex justify-center gap-1.5 mt-5">
           {Array.from({ length: Math.ceil(data.total / 20) }, (_, i) => (
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`px-3 py-1 rounded text-sm ${
+              className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
                 page === i + 1
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 dark:bg-gray-800'
+                  ? 'bg-primary-600 text-white shadow-sm'
+                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               {i + 1}
