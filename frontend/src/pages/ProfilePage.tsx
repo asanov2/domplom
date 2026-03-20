@@ -27,6 +27,7 @@ export default function ProfilePage() {
   const [showStats, setShowStats] = useState(user?.show_stats ?? true)
   const [uploading, setUploading] = useState(false)
   const [saving, setSaving] = useState(false)
+  const [avatarModalOpen, setAvatarModalOpen] = useState(false)
 
   const { data: stats } = useQuery<UserStats>({
     queryKey: ['my-stats'],
@@ -47,6 +48,7 @@ export default function ProfilePage() {
     const file = e.target.files?.[0]
     if (!file) return
     setUploading(true)
+    setAvatarModalOpen(false)
     try {
       const formData = new FormData()
       formData.append('file', file)
@@ -64,6 +66,7 @@ export default function ProfilePage() {
   }
 
   const handleAvatarDelete = async () => {
+    setAvatarModalOpen(false)
     setSaving(true)
     try {
       const { data } = await api.put('/auth/profile', {
@@ -153,46 +156,84 @@ export default function ProfilePage() {
         <section className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 shadow-card p-8 mb-6">
           <div className="flex flex-col sm:flex-row items-center gap-6">
             {/* Avatar */}
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden flex items-center justify-center ring-4 ring-primary-100 dark:ring-primary-900/30">
-                  {avatar ? (
-                    <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
-                  ) : (
-                    <svg className="w-12 h-12 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                  )}
+            <div className="relative">
+              {/* Clickable avatar */}
+              <button
+                type="button"
+                onClick={() => setAvatarModalOpen(true)}
+                className="relative group w-24 h-24 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden flex items-center justify-center ring-4 ring-primary-100 dark:ring-primary-900/30 cursor-pointer"
+              >
+                {avatar ? (
+                  <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <svg className="w-12 h-12 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                )}
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                 </div>
                 {uploading && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   </div>
                 )}
-              </div>
-              <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1.5 px-3 py-1.5 bg-primary-600 hover:bg-primary-700 text-white text-xs font-medium rounded-lg cursor-pointer transition-colors">
-                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                  {t('profile.uploadPhoto')}
-                  <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
-                </label>
-                {avatar && (
-                  <button
-                    type="button"
-                    onClick={handleAvatarDelete}
-                    disabled={saving}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                    </svg>
-                    {t('profile.deletePhoto')}
-                  </button>
-                )}
-              </div>
+              </button>
+
+              {/* Avatar modal */}
+              {avatarModalOpen && (
+                <>
+                  {/* Backdrop */}
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setAvatarModalOpen(false)}
+                  />
+                  {/* Popover */}
+                  <div className="absolute left-1/2 -translate-x-1/2 top-28 z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-4 w-56 flex flex-col items-center gap-3">
+                    {/* Arrow */}
+                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-gray-900 border-l border-t border-gray-200 dark:border-gray-700 rotate-45" />
+
+                    {/* Preview */}
+                    <div className="w-20 h-20 rounded-full bg-gray-100 dark:bg-gray-800 overflow-hidden flex items-center justify-center ring-2 ring-primary-100 dark:ring-primary-900/30">
+                      {avatar ? (
+                        <img src={avatar} alt="Avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <svg className="w-10 h-10 text-gray-300 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      )}
+                    </div>
+
+                    {/* Buttons */}
+                    <label className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white text-sm font-medium rounded-xl cursor-pointer transition-colors">
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                      </svg>
+                      {t('profile.uploadPhoto')}
+                      <input type="file" accept="image/*" onChange={handleAvatarUpload} className="hidden" />
+                    </label>
+
+                    {avatar && (
+                      <button
+                        type="button"
+                        onClick={handleAvatarDelete}
+                        disabled={saving}
+                        className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-900/20 dark:hover:bg-red-900/30 text-red-600 dark:text-red-400 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+                      >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                        {t('profile.deletePhoto')}
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Info */}
